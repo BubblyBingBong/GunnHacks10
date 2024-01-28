@@ -11,7 +11,7 @@ from punch_detection import HandPunchDetector
 false = False
 true = True
 asdp = [false, false, false, false]
-difficulty = 700 # high number: less difficult
+difficulty = 2000 # high number: less difficult
 # 2000: easy
 # 1300: medium
 # 700: hard
@@ -164,7 +164,7 @@ def update(frameTime, uistate):
         if  abs(enemyChar.xpos-youChar.xpos)<=ENEMY_TARGET_RANGE: #position time is checking how long they're within range now
             enemyChar.positionTime+=frameTime
             youChar.positionTime+=frameTime
-        youChar.update(playerPosition(), isPunch())
+        youChar.update(playerPosition(), PUNCH if isPunch() else REST)
         enemyChar.update(periodicEnemyPos(ticks / difficulty), enemyAction())
         
         # print(enemyChar.xpos)
@@ -203,6 +203,7 @@ def update(frameTime, uistate):
         pygame.draw.circle(screen, (0,255,0), (youChar.xpos * display_size[0] + (display_size[0] / 2), 600), 25)
         if punchAnimating:
             pygame.draw.rect(screen, (0,0,255), (0,display_size[1]-75, display_size[0],75))
+
     elif uistate == GAMEOVER:
         #display gameover screen
 
