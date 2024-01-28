@@ -11,7 +11,7 @@ from punch_detection import HandPunchDetector
 false = False
 true = True
 asdp = [false, false, false, false]
-difficulty = MEDIUM # high number: less difficult
+difficulty = BOSS # high number: less difficult
 # 2000: easy
 # 1300: medium
 # 700: hard
@@ -135,28 +135,42 @@ screen = pygame.display.set_mode(display_size)
 font32 = pygame.font.Font("freesansbold.ttf", 32)
 font24 = pygame.font.Font("freesansbold.ttf", 24)
 gamebg = pygame.image.load("bgbgbg.png")
-
-if difficulty == EASY:
-    midimg, midimgsize = image_load_downscale("0_1_Idle.png", 7)
-    mpg, mpgs = image_load_downscale("0_1_Punch.png", 7)
-    leftimg, leftimgsize = image_load_downscale("0_0_Idle.png", 7)
-    lpg, lpgs = image_load_downscale("0_0_Punch.png", 7)
-    rightimg, rightimgsize = image_load_downscale("0_2_Idle.png", 7)
-    rpg, rpgs = image_load_downscale("0_2_Punch.png", 7)
-elif difficulty == MEDIUM:
-    midimg, midimgsize = image_load_downscale("5_1_Idle.png", 7)
-    mpg, mpgs = image_load_downscale("5_1_Punch.png", 7)
-    leftimg, leftimgsize = image_load_downscale("5_0_Idle.png", 7)
-    lpg, lpgs = image_load_downscale("5_0_Punch.png", 7)
-    rightimg, rightimgsize = image_load_downscale("5_2_Idle.png", 7)
-    rpg, rpgs = image_load_downscale("5_2_Punch.png", 7)
-elif difficulty == HARD:
-    midimg, midimgsize = image_load_downscale("2_1_Idle.png", 7)
-    mpg, mpgs = image_load_downscale("2_1_Punch.png", 7)
-    leftimg, leftimgsize = image_load_downscale("2_0_Idle.png", 7)
-    lpg, lpgs = image_load_downscale("2_0_Punch.png", 7)
-    rightimg, rightimgsize = image_load_downscale("2_2_Idle.png", 7)
-    rpg, rpgs = image_load_downscale("2_2_Punch.png", 7)
+midimg, midimgsize, mpg, mpgs, leftimg, leftimgsize, lpg, lpgs, rightimg, rightimgsize, rpg, rpgs = 0,0,0,0,0,0,0,0,0,0,0,0
+# if difficulty == EASY: # William DONE
+#     midimg, midimgsize = image_load_downscale("0_1_Idle.png", 7)
+#     mpg, mpgs = image_load_downscale("0_1_Punch.png", 7)
+#     leftimg, leftimgsize = image_load_downscale("0_0_Idle.png", 7)
+#     lpg, lpgs = image_load_downscale("0_0_Punch.png", 7)
+#     rightimg, rightimgsize = image_load_downscale("0_2_Idle.png", 7)
+#     rpg, rpgs = image_load_downscale("0_2_Punch.png", 7)
+# elif difficulty == MEDIUM: # Timon DONE
+#     midimg, midimgsize = image_load_downscale("1_1_Idle.png", 7)
+#     mpg, mpgs = image_load_downscale("1_1_Punch.png", 7)
+#     leftimg, leftimgsize = image_load_downscale("1_0_Idle.png", 7)
+#     lpg, lpgs = image_load_downscale("1_0_Punch.png", 7)
+#     rightimg, rightimgsize = image_load_downscale("1_2_Idle.png", 7)
+#     rpg, rpgs = image_load_downscale("1_2_Punch.png", 7)
+# elif difficulty == HARD: # Eli
+#     midimg, midimgsize = image_load_downscale("5_1_Idle.png", 7)
+#     mpg, mpgs = image_load_downscale("5_1_Punch.png", 7)
+#     leftimg, leftimgsize = image_load_downscale("5_0_Idle.png", 7)
+#     lpg, lpgs = image_load_downscale("5_0_Punch.png", 7)
+#     rightimg, rightimgsize = image_load_downscale("5_2_Idle.png", 7)
+#     rpg, rpgs = image_load_downscale("5_2_Punch.png", 7)
+# elif difficulty == BOSS: # Vincent DONE
+#     midimg, midimgsize = image_load_downscale("5_1_Idle.png", 7)
+#     mpg, mpgs = image_load_downscale("5_1_Punch.png", 7)
+#     leftimg, leftimgsize = image_load_downscale("5_0_Idle.png", 7)
+#     lpg, lpgs = image_load_downscale("5_0_Punch.png", 7)
+#     rightimg, rightimgsize = image_load_downscale("5_2_Idle.png", 7)
+#     rpg, rpgs = image_load_downscale("5_2_Punch.png", 7)
+# elif difficulty == BEGINNER: # Ethan
+#     midimg, midimgsize = image_load_downscale("2_1_Idle.png", 7)
+#     mpg, mpgs = image_load_downscale("2_1_Punch.png", 7)
+#     leftimg, leftimgsize = image_load_downscale("2_0_Idle.png", 7)
+#     lpg, lpgs = image_load_downscale("2_0_Punch.png", 7)
+#     rightimg, rightimgsize = image_load_downscale("2_2_Idle.png", 7)
+#     rpg, rpgs = image_load_downscale("2_2_Punch.png", 7)
 
 
 player_idle_1_img, player_idle_1_img_size = image_load_downscale("playeridle1.png", 12)
@@ -181,12 +195,13 @@ hitIcons = []
 missIcons = []
 
 uistate = MENU
+selectedDifficulty = false
 
 def update(frameTime):
     
     # if isPunch():
     #     print("PUNCH!")
-    global ticks, punchAnimating, punchAnimatingt, enemypunching, enemypunchanit, uistate
+    global ticks, punchAnimating, punchAnimatingt, enemypunching, enemypunchanit, uistate, asdp, selectedDifficulty, difficulty, midimg, midimgsize, mpg, mpgs, leftimg, leftimgsize, lpg, lpgs, rightimg, rightimgsize, rpg, rpgs
 
     dt = frameTime >> DT_SHIFT
     ticks += 1
@@ -194,7 +209,51 @@ def update(frameTime):
 
     if uistate == MENU:
         text = font32.render("XORcise VIRTUAL BOXING", True, (255,0,0))
-        text2 = font24.render("Punch to get started!", True, (255,0,0))
+        text2 = font24.render("Select a difficulty!", True, (255,0,0))
+        text3 = font24.render("1: Easy, 2: Medium, 3: Hard", True, (255,0,0))
+        textRect = text.get_rect()
+        text2Rect = text2.get_rect()
+        text3Rect = text3.get_rect()
+        textRect.center = (display_size[0] // 2, display_size[1] // 2+90)
+        text2Rect.center = (display_size[0] // 2, display_size[1] // 2 + 150)
+        text3Rect.center = (display_size[0] // 2, display_size[1] // 2 + 210)
+        screen.blit(text, textRect)
+        screen.blit(text2, text2Rect)
+        screen.blit(text3, text3Rect)
+        #update current state
+        #if currently calibrating, wait
+
+        if asdp[0] == -1:
+            difficulty = EASY # William DONE
+            midimg, midimgsize = image_load_downscale("0_1_Idle.png", 7)
+            mpg, mpgs = image_load_downscale("0_1_Punch.png", 7)
+            leftimg, leftimgsize = image_load_downscale("0_0_Idle.png", 7)
+            lpg, lpgs = image_load_downscale("0_0_Punch.png", 7)
+            rightimg, rightimgsize = image_load_downscale("0_2_Idle.png", 7)
+            rpg, rpgs = image_load_downscale("0_2_Punch.png", 7)
+            uistate=MENU2
+        elif asdp[1] == -1:
+            difficulty = MEDIUM # Timon DONE
+            midimg, midimgsize = image_load_downscale("1_1_Idle.png", 7)
+            mpg, mpgs = image_load_downscale("1_1_Punch.png", 7)
+            leftimg, leftimgsize = image_load_downscale("1_0_Idle.png", 7)
+            lpg, lpgs = image_load_downscale("1_0_Punch.png", 7)
+            rightimg, rightimgsize = image_load_downscale("1_2_Idle.png", 7)
+            rpg, rpgs = image_load_downscale("1_2_Punch.png", 7)
+            uistate=MENU2
+        elif asdp[2] == -1:
+            difficulty = BOSS # Vincent DONE
+            midimg, midimgsize = image_load_downscale("5_1_Idle.png", 7)
+            mpg, mpgs = image_load_downscale("5_1_Punch.png", 7)
+            leftimg, leftimgsize = image_load_downscale("5_0_Idle.png", 7)
+            lpg, lpgs = image_load_downscale("5_0_Punch.png", 7)
+            rightimg, rightimgsize = image_load_downscale("5_2_Idle.png", 7)
+            rpg, rpgs = image_load_downscale("5_2_Punch.png", 7)
+            uistate=MENU2
+        #update ui
+    elif uistate == MENU2:
+        text = font32.render("XORcise VIRTUAL BOXING", True, (255,0,0))
+        text2 = font24.render("Punch to start!", True, (255,0,0))
         textRect = text.get_rect()
         text2Rect = text2.get_rect()
         textRect.center = (display_size[0] // 2, display_size[1] // 2+90)
@@ -208,9 +267,7 @@ def update(frameTime):
             uistate=GAME
         #update ui
     elif uistate == GAME:
-        
-
-        
+        # print(1)
         for i in hitIcons:
             if (i.pos[1]>display_size[1] or i.pos[1]<0):
                 hitIcons.remove(i)
@@ -218,26 +275,30 @@ def update(frameTime):
             else:
                 i.update()
                 i.display()
-
+        # print(2)
         for i in missIcons:
             if (i.pos[1]>display_size[1]):
                 missIcons.remove(i)
             else:
                 i.update()
                 i.display()
+        # print(3)
         youChar.cooldown-=frameTime
         enemyChar.cooldown-=frameTime
-        if  abs(enemyChar.xpos-youChar.xpos)<=ENEMY_TARGET_RANGE: #position time is checking how long they're within range now
+        if abs(enemyChar.xpos-youChar.xpos)<=ENEMY_TARGET_RANGE: #position time is checking how long they're within range now
             enemyChar.positionTime+=frameTime
             youChar.positionTime+=frameTime
         else:
             enemyChar.positionTime==0
             youChar.positionTime==0
+        # print(4)
         youChar.update(playerPosition(), PUNCH if isPunch() else REST)
+        # print(5)
         enemyChar.update(periodicEnemyPos(ticks / difficulty), enemyAction())
         
         # print(enemyChar.xpos)
         #hit detection
+        # print(6)
         if youChar.cooldown==ALLIED_COOLDOWN:
             if youChar.action == PUNCH:
                 punchAnimating = True
@@ -248,13 +309,14 @@ def update(frameTime):
                     # print("hitobj")
                     toAppend.setInit(hitimg,[(enemyChar.xpos+.5)*display_size[0],10+random.random()*15],[1+random.random()*2,-1 -random.random()], [0,1])
                     hitIcons.append(toAppend)
-                    if enemyChar.healthPoints<=0:
-                        uiState=GAMEOVER
+                    # if enemyChar.healthPoints<=0:
+                    #     uiState=GAMEOVER
             else:
                 toAppend = physicsObj()
                 # print("missobj")
                 toAppend.setInit(missimg,[(youChar.xpos+.5)*display_size[0],10+random.random()*15],[(random.random()-.5)*2.5,-1.25], [0,-1])
                 missIcons.append(toAppend)
+        # print(7)
         if enemyChar.cooldown==ENEMY_COOLDOWN:
             if enemyChar.action == PUNCH:
                 enemypunching = True
@@ -265,14 +327,14 @@ def update(frameTime):
                     toAppend = physicsObj()
                     toAppend.setInit(hitimg,[(youChar.xpos+.5)*display_size[0],display_size[1]*.75+random.random()*5],[2*(random.random()-.5),-2+random.random()*1], [0,1+random.random()*.5])
                     hitIcons.append(toAppend)
-                if youChar.healthPoints<=0:
-                    uiState=GAMEOVER
+                # if youChar.healthPoints<=0:
+                #     uiState=GAMEOVER
             else:
                 # print("missobj")
                 toAppend = physicsObj()
                 toAppend.setInit(missimg,[(enemyChar.xpos+.5)*display_size[0],display_size[1]*.75+random.random()*5],[1.5*(random.random()-.5),-1+random.random()*1], [0,1+random.random()*.5])
                 missIcons.append(toAppend)
-        
+        # print(8)
         if youChar.action == PUNCH:
             punchAnimating = True
             punchAnimatingt = 50
@@ -287,18 +349,20 @@ def update(frameTime):
             enemypunchanit -= 1
         if enemypunchanit <= 0:
             enemypunching = False
-
+        # print(9)
         #key detection
 
         #update UI - bottom: HP
-        pygame.draw.rect(screen,(255,0,0),(display_size[0]*.1,0, display_size[0]*.8*(enemyChar.healthPoints)/ENEMY_HP,display_size[1]*.05))
         
+        pygame.draw.rect(screen,(255,0,0),(display_size[0]*.1,0, display_size[0]*.8*(enemyChar.healthPoints+0.01)/ENEMY_HP,display_size[1]*.05))
+    
         pygame.draw.rect(screen,(0,0,255),(0,display_size[1]*.2, display_size[0]*.05,display_size[1]*(max(0,youChar.cooldown)/ALLIED_COOLDOWN)))
-
-        pygame.draw.rect(screen,(0,255,0),(display_size[0]*.1,display_size[1]*.90, display_size[0]*.8*(youChar.healthPoints)/ALLIED_HP,display_size[1]*.1)) #your healthbar
+        
+        pygame.draw.rect(screen,(0,255,0),(display_size[0]*.1,display_size[1]*.90, display_size[0]*.8*(youChar.healthPoints+0.01)/ALLIED_HP,display_size[1]*.1)) #your healthbar
         # print(youChar.cooldown, enemyChar.cooldown, youChar.xpos, enemyChar.xpos, asdp)
         # print(youChar.healthPoints, enemyChar.healthPoints, youChar.cooldown, enemyChar.cooldown)
         # pygame.draw.circle(screen, (255,0,0), (enemyChar.xpos * display_size[0] + (display_size[0] / 2), 200), 25) #may not work
+        # print(10)
         if enemyChar.xpos < -0.1:
             if enemypunching:
                 screen.blit(lpg, (enemyChar.xpos * display_size[0] + (display_size[0] / 2) - lpgs[0]/2, 250 - lpgs[1]/2 + (20+random.random()*10)*np.sin(ticks/7)))
@@ -314,18 +378,27 @@ def update(frameTime):
                 screen.blit(mpg, (enemyChar.xpos * display_size[0] + (display_size[0] / 2) - mpgs[0]/2, 250 - mpgs[1]/2 + (20+random.random()*10)*np.sin(ticks/7)))
             else:
                 screen.blit(midimg, (enemyChar.xpos * display_size[0] + (display_size[0] / 2) - midimgsize[0]/2, 250 - midimgsize[1]/2 + (20+random.random()*10)*np.sin(ticks/7)))
-        
+        # print(11)
         # pygame.draw.circle(screen, (0,255,0), (youChar.xpos * display_size[0] + (display_size[0] / 2), 600), 25)
-        if punchAnimating:
-            screen.blit(player_punch_img, (youChar.xpos * display_size[0] + (display_size[0] / 2) - player_punch_img_size[0]/2, 600 - player_punch_img_size[1]/2))
-        elif youChar.xpos <= 0:
-            screen.blit(player_idle_1_img, (youChar.xpos * display_size[0] + (display_size[0] / 2) - player_idle_1_img_size[0]//2, 600 - player_idle_1_img_size[1]/2))
-        else:
-            screen.blit(player_idle_2_img, (youChar.xpos * display_size[0] + (display_size[0] / 2) - player_idle_2_img_size[0]//2, 600 - player_idle_2_img_size[1]/2))
-        if youChar.healthPoints * enemyChar.healthPoints <= 0: uistate = GAMEOVER
+        if youChar.healthPoints > 0 and enemyChar.healthPoints > 0:
+            if punchAnimating:
+                screen.blit(player_punch_img, (youChar.xpos * display_size[0] + (display_size[0] / 2) - player_punch_img_size[0]/2, 600 - player_punch_img_size[1]/2))
+            elif youChar.xpos <= 0:
+                screen.blit(player_idle_1_img, (youChar.xpos * display_size[0] + (display_size[0] / 2) - player_idle_1_img_size[0]//2, 600 - player_idle_1_img_size[1]/2))
+            else:
+                screen.blit(player_idle_2_img, (youChar.xpos * display_size[0] + (display_size[0] / 2) - player_idle_2_img_size[0]//2, 600 - player_idle_2_img_size[1]/2))
+        if youChar.healthPoints <= 0 or enemyChar.healthPoints <= 0:
+            uistate = GAMEOVER
+        #     face_detection_thread.stop()
+        #     hand_punch_detector.stop()
+        #     quit()
+        #     uistate = GAMEOVER
+        #     return
+        
+        #print(12)
     elif uistate == GAMEOVER:
         #display gameover screen
-        pygame.draw.rect(screen,(255,255,255),(0,0,display_size[0],display_size[1]))
+        screen.fill((0,0,0))
         if youChar.healthPoints <= 0:
             text = font32.render("YOU LOST", True, (255, 0, 0))
             textRect = text.get_rect()
@@ -335,11 +408,17 @@ def update(frameTime):
             textRect = text.get_rect()
             textRect.center = (display_size[0] // 2, display_size[1] // 2)
         screen.blit(text, textRect)
-        text2 = font24.render("Punch to exit", True, (255, 0, 0))
+        text2 = font24.render("Press space to exit", True, (255, 0, 0))
         text2Rect = text2.get_rect()
         text2Rect.center = (display_size[0] // 2, display_size[1] // 2 + 90)
         screen.blit(text2, text2Rect)
-        if isPunch():
+        if asdp[3] == -1:
+            # print("QUITTING")
+            pygame.quit()
+            face_detection_thread.stop()
+            hand_punch_detector.stop()
+            frame_capturer.stop()
+            # print("QUITTINGG")
             sys.exit()
     else:
         pass #noop
@@ -360,6 +439,17 @@ while True:
                 testplayerpos=2
             if event.key == K_p:
                 asdp[3] = True
+            if event.key == K_SPACE:
+                asdp[3] = -1
+            if event.key == K_1:
+                asdp[0] = -1
+            if event.key == K_2:
+                asdp[1] = -1
+            if event.key == K_3:
+                asdp[2] = -1
     frameTime = gameClock.tick(FPS)
-    update(dt)
+    try:
+        update(dt)
+    except Exception as e:
+        print(e)
     pygame.display.flip()

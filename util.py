@@ -19,6 +19,7 @@ ENEMY_GODLINESS_BASE =  25 #higher is easier
 
 
 MENU = "menu"
+MENU2 = "menu2"
 GAME = "game"
 GAMEOVER = "gameover"
 
@@ -26,7 +27,7 @@ BEGINNER = 3000
 EASY = 2000
 MEDIUM = 1700
 HARD = 1400
-BOSS = 1000
+BOSS = 700
 
 def image_load_downscale(name, factor):
     img = pygame.image.load(name)
