@@ -166,6 +166,25 @@ player_punch_img, player_punch_img_size = image_load_downscale("playerpunch.png"
 hitimg, hitimgsize = image_load_downscale("hit.png", 1)
 missimg, missimgsize = image_load_downscale("miss.png", 1)
 
+music = pygame.mixer.music.load("sounds/musicbetter.wav")
+pygame.mixer.music.play(-1)
+
+bell_sound = pygame.mixer.Sound("sounds/bell.wav")
+
+punch_sounds = [
+    pygame.mixer.Sound("sounds/punch1.wav"),
+    pygame.mixer.Sound("sounds/punch2.wav"),
+    pygame.mixer.Sound("sounds/punch3.wav"),
+    pygame.mixer.Sound("sounds/punch4.wav"),
+    pygame.mixer.Sound("sounds/punch5.wav"),
+]
+
+hit_sounds = [
+    pygame.mixer.Sound("sounds/hit1.wav"),
+    pygame.mixer.Sound("sounds/hit2.wav"),
+    pygame.mixer.Sound("sounds/hit3.wav"),
+]
+
 DT_SHIFT = 10
 FPS = 60
 ANIMATION_DT = 1000
@@ -205,12 +224,10 @@ def update(frameTime):
         #if currently calibrating, wait
 
         if (isPunch()): #TOO: add transition
-            uistate=GAME
+            bell_sound.play()
+            uistate=GAME 
         #update ui
     elif uistate == GAME:
-        
-
-        
         for i in hitIcons:
             if (i.pos[1]>display_size[1] or i.pos[1]<0):
                 hitIcons.remove(i)
@@ -242,10 +259,14 @@ def update(frameTime):
             if youChar.action == PUNCH:
                 punchAnimating = True
                 punchAnimatingt = 50
+                random.choice(punch_sounds).play()
+
                 if abs(enemyChar.xpos-youChar.xpos)<=ALLIED_HIT_RANGE:
+                    random.choice(hit_sounds).play()
+
                     enemyChar.healthPoints-=1
                     toAppend = physicsObj()
-                    print("hitobj")
+                    #print("hitobj")
                     toAppend.setInit(hitimg,[(enemyChar.xpos+.5)*display_size[0],10+random.random()*15],[1+random.random()*2,-1 -random.random()], [0,1])
                     hitIcons.append(toAppend)
                     if enemyChar.healthPoints<=0:
