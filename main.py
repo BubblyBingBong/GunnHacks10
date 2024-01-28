@@ -4,7 +4,9 @@ import sys
 import numpy as np
 from util import * 
 import random
+from camera import FrameCapturer
 from face_detection import FaceDetectionThread
+from punch_detection import HandPunchDetector
 
 false = False
 true = True
@@ -14,14 +16,21 @@ difficulty = 700 # high number: less difficult
 # 1300: medium
 # 700: hard
 
-face_detection_thread = FaceDetectionThread(0, False)
+frame_capturer = FrameCapturer(camera_index=0)
+
+hand_punch_detector = HandPunchDetector(frame_capturer=frame_capturer)
+face_detection_thread = FaceDetectionThread(frame_capturer=frame_capturer)
 try:
     # Start the face detection thread
+    hand_punch_detector.start()
     face_detection_thread.start()
     face_detection_thread.reset_initial_position()
 except KeyboardInterrupt:
     # Stop the face detection thread on keyboard interrupt
     face_detection_thread.stop()
+    hand_punch_detector.stop()
+    frame_capturer.stop()
+
 
 #positions = left, right, middle
 #actions = punching, resting
@@ -57,12 +66,7 @@ youChar = Character()
 testplayerpos = 0
 
 def isPunch():
-    if asdp[3] == 1:
-        return PUNCH
-    else:
-        return REST
-    # To be integrated with CV (deez nuts)
-    return false
+    return hand_punch_detector.is_punching
 
 def playerPosition():
     face_offset = face_detection_thread.get_face_x_offset()
@@ -117,14 +121,14 @@ pygame.display.set_caption("Test")
 display_size = (1280, 720)
 screen = pygame.display.set_mode(display_size)
 font = pygame.font.Font("freesansbold.ttf", 32)
-# bg = pygame.image.load("GunnHacks10/bgbg.png")
-midimg = pygame.image.load("GunnHacks10/0_1_Idle.png")
+# bg = pygame.image.load("bgbg.png")
+midimg = pygame.image.load("0_1_Idle.png")
 midimgsize = (midimg.get_width()//7,midimg.get_height()//7)
 midimg = pygame.transform.scale(midimg, midimgsize)
-leftimg = pygame.image.load("GunnHacks10/0_0_Idle.png")
+leftimg = pygame.image.load("0_0_Idle.png")
 leftimgsize = (leftimg.get_width()//7,leftimg.get_height()//7)
 leftimg = pygame.transform.scale(leftimg, leftimgsize)
-rightimg = pygame.image.load("GunnHacks10/0_2_Idle.png")
+rightimg = pygame.image.load("0_2_Idle.png")
 rightimgsize = (rightimg.get_width()//7,rightimg.get_height()//7)
 rightimg = pygame.transform.scale(rightimg, rightimgsize)
         
@@ -141,6 +145,8 @@ punchAnimatingt = 0
 uistate = GAME
 
 def update(frameTime, uistate):
+    # if isPunch():
+    #     print("PUNCH!")
     global ticks, punchAnimating, punchAnimatingt
 
     dt = frameTime >> DT_SHIFT
