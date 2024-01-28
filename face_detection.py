@@ -40,12 +40,12 @@ class FaceDetectionThread(threading.Thread):
                     normalized_x = (x + w / 2) / frame_width
                     normalized_y = (y + h / 2) / frame_height
                     self.face_position = (normalized_x, normalized_y)
+                    cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
                 else:
                     self.face_position = (0, 0)
 
             # Display the resulting frame
             if self.enable_camera_display:
-                cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
                 cv2.imshow('Detection', frame)
 
             # Break the loop if the 'q' key is pressed

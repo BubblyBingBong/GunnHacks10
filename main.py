@@ -10,7 +10,7 @@ false = False
 true = True
 asdp = [false, false, false, false]
 
-face_detection_thread = FaceDetectionThread()
+face_detection_thread = FaceDetectionThread(0, True)
 try:
     # Start the face detection thread
     face_detection_thread.start()
@@ -32,7 +32,6 @@ class Character():
 
     def update(self, newxpos, newAction): # reads the action and position from CV and uses them to update the player
         currentTime = pygame.time.get_ticks()
-
         self.xpos = newxpos # updates position (no cooldown)
        
         if newAction == REST:
@@ -63,39 +62,56 @@ def isPunch():
 
 def playerPosition():
     face_offset = face_detection_thread.get_face_x_offset()
-
+    if face_offset == 0:
+        return youChar.xpos
     return np.clip(face_offset, -0.5, +0.5)
 
  
 def enemyAction(): # done
-    if enemyChar.cooldown <= 0 and youChar.position == enemyChar.position and youChar.positionTime >= (8+random.random()*15):
+    if enemyChar.cooldown <= 0 and abs(enemyChar.xpos-youChar.xpos)<=ENEMY_TARGET_RANGE and youChar.positionTime >= (8+random.random()*15):
         enemyChar.cooldown=DEFAULT_PUNCH_CD
         return PUNCH
     return REST
 
 def enemyPos(): 
-    if enemyChar.positionTime>=12+random.random()*13: #make sure they're not superhuman
+    funnevariable = enemyChar.xpos
+    if enemyChar.positionTime>=12+random.random()*13: #humble them with a reaction 
         if abs(enemyChar.xpos-youChar.xpos)<=ENEMY_TARGET_RANGE: #if in same range currently
             if youChar.cooldown< DEFAULT_PUNCH_CD * .4 and enemyChar.cooldown>=DEFAULT_PUNCH_CD*.5: #if it senses punch incoming and has been in space longer than reaction time
-                if youChar.position==1: #if in the middle then move to a random position
-                    enemyChar.positionTime=0
-                    return (random.random()-.5)*2+enemyChar.xpos
-                else:
-                    enemyChar.positionTime=0
-                    return 1
+                funnevariable+=(random.random()-.5)*.1 #move by a random amount in either direction
         else:
-            if enemyChar.cooldown < DEFAULT_PUNCH_CD *.4: #if punch is almost ready, teleport to u
-                if abs(enemyChar.position-youChar.position) <= 1:
-                    enemyChar.positionTime=0
-                    return youChar.position
+            if (enemyChar.cooldown < DEFAULT_PUNCH_CD *.4): #if punch cooldown is low and distance is far awayish then go closer
+                if (youChar.xpos<enemyChar.xpos):
+                    funnevariable-=.1
                 else:
-                    enemyChar.positionTime=0
-                    return MIDDLE        
-    return enemyChar.position #maintain curr position
+                    funnevariable+=.1
+    if (funnevariable>.5):
+        funnevariable =.5
+    elif funnevariable<-.5:
+        funnevariable=-.5
+    return funnevariable #maintain curr position
+
+def periodicEnemyPos(t):
+    value = 0
+
+    # Set up parameters for the function
+    sin_frequencies = [-21, 41]
+    sin_amplitudes = [.17, .07]
+    cos_frequencies = [31, -51]
+    cos_amplitudes = [.12, .14]
+
+    for i in range(len(sin_frequencies)):
+        value += sin_amplitudes[i] * np.sin(sin_frequencies[i] * t)
+
+    for i in range(len(cos_frequencies)):
+        value += cos_amplitudes[i] * np.cos(cos_frequencies[i] * t)
+
+    return value
 
 pygame.init()
 pygame.display.set_caption("Test")
-screen = pygame.display.set_mode((500,500))
+display_size = (500, 500)
+screen = pygame.display.set_mode(display_size)
 font = pygame.font.Font("freesansbold.ttf", 32)
 # bg = pygame.image.load("GunnHacks10/bgbg.png")
 
@@ -103,13 +119,16 @@ DT_SHIFT = 10
 FPS = 60
 ANIMATION_DT = 1000
 gameClock = pygame.time.Clock()
+ticks = 0
 dt = 1
 
 uistate = GAME
 
 def update(frameTime, uistate):
+    global ticks
 
     dt = frameTime >> DT_SHIFT
+    ticks += 1
     #playerpos = playerBodyPosition()
 
     if uistate == MENU:
@@ -124,7 +143,10 @@ def update(frameTime, uistate):
             enemyChar.positionTime+=frameTime
             youChar.positionTime+=frameTime
         youChar.update(playerPosition(), isPunch())
-        enemyChar.update(enemyPos(), enemyAction())
+        enemyChar.update(periodicEnemyPos(ticks / 700), enemyAction())
+        
+        # print(enemyChar.xpos)
+        
         #hit detection
         if  abs(enemyChar.xpos-youChar.xpos)<=ENEMY_TARGET_RANGE: #do the thingggggggg
             if youChar.action == PUNCH:
@@ -138,9 +160,9 @@ def update(frameTime, uistate):
         #key detection
 
         #update UI - bottom: HP
-        print(youChar.cooldown, enemyChar.cooldown, youChar.position, enemyChar.position, asdp)
-        pygame.draw.circle(screen, (255,0,0), (enemyChar.position*100 + 50, 200), 25)
-        pygame.draw.circle(screen, (0,255,0), (youChar.position*100 + 50, 400), 25)
+        # print(youChar.cooldown, enemyChar.cooldown, youChar.xpos, enemyChar.xpos, asdp)
+        pygame.draw.circle(screen, (255,0,0), (enemyChar.xpos * display_size[0] + (display_size[0] / 2), 200), 25) #may not work
+        pygame.draw.circle(screen, (0,255,0), (youChar.xpos * display_size[0] + (display_size[0] / 2), 400), 25)
     elif uistate == GAMEOVER:
         #display gameover screen
 
