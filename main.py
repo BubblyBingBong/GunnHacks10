@@ -129,7 +129,7 @@ def periodicEnemyPos(t):
     #return enemyChar.xpos
 
 pygame.init()
-pygame.display.set_caption("XORcise")
+pygame.display.set_caption("BOXercise")
 display_size = (1280, 720)
 screen = pygame.display.set_mode(display_size)
 font32 = pygame.font.Font("freesansbold.ttf", 32)
@@ -227,7 +227,7 @@ def update(frameTime):
     #playerpos = playerBodyPosition()
 
     if uistate == MENU:
-        text = font32.render("XORcise VIRTUAL BOXING", True, (255,0,0))
+        text = font32.render("BOXERCISE FITNESS TRAINING", True, (255,0,0))
         text2 = font24.render("Select a difficulty!", True, (255,0,0))
         text3 = font24.render("1: Easy, 2: Medium, 3: Hard", True, (255,0,0))
         textRect = text.get_rect()
@@ -271,7 +271,7 @@ def update(frameTime):
             uistate=MENU2
         #update ui
     elif uistate == MENU2:
-        text = font32.render("XORcise VIRTUAL BOXING", True, (255,0,0))
+        text = font32.render("BOXERCISE FITNESS TRAINING", True, (255,0,0))
         text2 = font24.render("Punch to start!", True, (255,0,0))
         textRect = text.get_rect()
         text2Rect = text2.get_rect()
