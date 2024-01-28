@@ -180,7 +180,7 @@ player_punch_img, player_punch_img_size = image_load_downscale("sprites/playerpu
 hitimg, hitimgsize = image_load_downscale("sprites/hit.png", 1)
 missimg, missimgsize = image_load_downscale("sprites/miss.png", 1)
 
-music = pygame.mixer.music.load("sounds/musicbetter.wav")
+music = pygame.mixer.music.load("sounds/music-final.wav")
 pygame.mixer.music.play(-1)
 
 bell_sound = pygame.mixer.Sound("sounds/bell.wav")
