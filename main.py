@@ -135,11 +135,13 @@ ANIMATION_DT = 1000
 gameClock = pygame.time.Clock()
 ticks = 0
 dt = 1
+punchAnimating = false
+punchAnimatingt = 0
 
 uistate = GAME
 
 def update(frameTime, uistate):
-    global ticks
+    global ticks, punchAnimating, punchAnimatingt
 
     dt = frameTime >> DT_SHIFT
     ticks += 1
@@ -147,7 +149,7 @@ def update(frameTime, uistate):
 
     if uistate == MENU:
         #update current state
-        if (punching): #TOO: add transition
+        if (isPunch()): #TOO: add transition
             uistate=GAME
         #update ui
     elif uistate == GAME:
@@ -171,6 +173,15 @@ def update(frameTime, uistate):
                 youChar.healthPoints-=1
                 if youChar.healthPoints<=0:
                     uiState=GAMEOVER
+        
+        if youChar.action == PUNCH:
+            punchAnimating = True
+            punchAnimatingt = 50
+        if punchAnimating and punchAnimatingt > 0:
+            punchAnimatingt -= 1
+        if punchAnimatingt <= 0:
+            punchAnimating = False
+
         #key detection
 
         #update UI - bottom: HP
@@ -184,6 +195,8 @@ def update(frameTime, uistate):
             screen.blit(midimg, (enemyChar.xpos * display_size[0] + (display_size[0] / 2) - midimgsize[0]/2, 250 - midimgsize[1]/2 + (20+random.random()*10)*np.sin(ticks/7)))
         
         pygame.draw.circle(screen, (0,255,0), (youChar.xpos * display_size[0] + (display_size[0] / 2), 600), 25)
+        if punchAnimating:
+            pygame.draw.rect(screen, (0,0,255), (0,display_size[1]-75, display_size[0],75))
     elif uistate == GAMEOVER:
         #display gameover screen
 
