@@ -18,13 +18,13 @@ difficulty = 700 # high number: less difficult
 
 frame_capturer = FrameCapturer(camera_index=0)
 
-face_detection_thread = FaceDetectionThread(frame_capturer=frame_capturer)
 hand_punch_detector = HandPunchDetector(frame_capturer=frame_capturer)
+face_detection_thread = FaceDetectionThread(frame_capturer=frame_capturer)
 try:
     # Start the face detection thread
+    hand_punch_detector.start()
     face_detection_thread.start()
     face_detection_thread.reset_initial_position()
-    hand_punch_detector.start()
 except KeyboardInterrupt:
     # Stop the face detection thread on keyboard interrupt
     face_detection_thread.stop()
@@ -121,14 +121,14 @@ pygame.display.set_caption("Test")
 display_size = (1280, 720)
 screen = pygame.display.set_mode(display_size)
 font = pygame.font.Font("freesansbold.ttf", 32)
-# bg = pygame.image.load("GunnHacks10/bgbg.png")
-midimg = pygame.image.load("GunnHacks10/0_1_Idle.png")
+# bg = pygame.image.load("bgbg.png")
+midimg = pygame.image.load("0_1_Idle.png")
 midimgsize = (midimg.get_width()//7,midimg.get_height()//7)
 midimg = pygame.transform.scale(midimg, midimgsize)
-leftimg = pygame.image.load("GunnHacks10/0_0_Idle.png")
+leftimg = pygame.image.load("0_0_Idle.png")
 leftimgsize = (leftimg.get_width()//7,leftimg.get_height()//7)
 leftimg = pygame.transform.scale(leftimg, leftimgsize)
-rightimg = pygame.image.load("GunnHacks10/0_2_Idle.png")
+rightimg = pygame.image.load("0_2_Idle.png")
 rightimgsize = (rightimg.get_width()//7,rightimg.get_height()//7)
 rightimg = pygame.transform.scale(rightimg, rightimgsize)
         
@@ -143,8 +143,8 @@ dt = 1
 uistate = GAME
 
 def update(frameTime, uistate):
-    if isPunch():
-        print("PUNCH!")
+    # if isPunch():
+    #     print("PUNCH!")
     global ticks
 
     dt = frameTime >> DT_SHIFT

@@ -25,7 +25,6 @@ class HandPunchDetector:
 
     def _run(self):
         while self.running:
-            print(self.is_punching)
             frame = self.frame_capturer.get_frame()
 
             # hand tracking
@@ -37,40 +36,43 @@ class HandPunchDetector:
 
             results = self.hands.process(img)
 
-            # draw annotations (only if debug is True)
-            if self.debug:
-                img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
-                res = results.multi_hand_landmarks
-                if res:
-                    distance = 99999
-                    diag = -1
-                    for hand_landmark in res:
-                        distance = min(distance, hand_landmark.landmark[8].z)
-                        min_x = 999999
-                        min_y = 999999
-                        max_x = -999999
-                        max_y = -999999
-                        for lm in hand_landmark.landmark:
-                            min_x = min(min_x, lm.x)
-                            max_x = max(max_x, lm.x)
-                            min_y = min(min_y, lm.y)
-                            max_y = max(max_y, lm.y)
-                        diag = max(diag, math.sqrt((max_x - min_x) * (max_y - min_y)))
-                        self.mp_drawing.draw_landmarks(img, hand_landmark, connections=self.mp_hands.HAND_CONNECTIONS)
+            img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+            res = results.multi_hand_landmarks
+            if res:
+                distance = 99999
+                diag = -1
+                for hand_landmark in res:
+                    distance = min(distance, hand_landmark.landmark[8].z)
+                    min_x = 999999
+                    min_y = 999999
+                    max_x = -999999
+                    max_y = -999999
+                    for lm in hand_landmark.landmark:
+                        min_x = min(min_x, lm.x)
+                        max_x = max(max_x, lm.x)
+                        min_y = min(min_y, lm.y)
+                        max_y = max(max_y, lm.y)
+                    diag = max(diag, math.sqrt((max_x - min_x) * (max_y - min_y)))
+                    self.mp_drawing.draw_landmarks(img, hand_landmark, connections=self.mp_hands.HAND_CONNECTIONS)
 
-                    diag_ratio = diag / self.previous_diag
+                diag_ratio = diag / self.previous_diag
+                self.is_punching = diag_ratio > 1.3
+                self.previous_diag = diag
 
+                # draw annotations (only if debug is True)
+                if self.debug:
                     img = cv2.putText(img, 'diag: ' + str(int(1000 * diag) / 1000.0), (50, 50),
                                       cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2, cv2.LINE_AA)
                     img = cv2.putText(img, 'ratio: ' + str(diag_ratio), (50, 100),
                                       cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2, cv2.LINE_AA)
-                    self.is_punching = diag_ratio > 1.3
+                    
                     img = cv2.putText(img, 'Punching: ' + str(self.is_punching), (50, 150),
                                       cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2, cv2.LINE_AA)
 
-                    self.previous_diag = diag
-
-                cv2.imshow('stream', img)
+                    cv2.imshow('stream', img)
+                    
+                    if self.is_punching:
+                        print("PUNCHCHCHCH")
 
             if cv2.waitKey(1) & 0xFF == ord("q"):
                 self.stop()
@@ -78,10 +80,8 @@ class HandPunchDetector:
 if __name__ == "__main__":
     try:
         frame_capturer = FrameCapturer()
-        hand_detector = HandPunchDetector(frame_capturer=frame_capturer, debug=True)
+        hand_detector = HandPunchDetector(frame_capturer=frame_capturer, debug=False)
         hand_detector.start()
-        while True:
-            print(hand_detector.is_punching)
             
     except KeyboardInterrupt:
         hand_detector.stop()
