@@ -4,20 +4,29 @@ import sys
 import numpy as np
 from util import * 
 import random
+from camera import FrameCapturer
 from face_detection import FaceDetectionThread
+from punch_detection import HandPunchDetector
 
 false = False
 true = True
 asdp = [false, false, false, false]
 
-face_detection_thread = FaceDetectionThread(0, True)
+frame_capturer = FrameCapturer(camera_index=0)
+
+face_detection_thread = FaceDetectionThread(frame_capturer=frame_capturer)
+hand_punch_detector = HandPunchDetector(frame_capturer=frame_capturer)
 try:
     # Start the face detection thread
     face_detection_thread.start()
     face_detection_thread.reset_initial_position()
+    hand_punch_detector.start()
 except KeyboardInterrupt:
     # Stop the face detection thread on keyboard interrupt
     face_detection_thread.stop()
+    hand_punch_detector.stop()
+    frame_capturer.stop()
+
 
 #positions = left, right, middle
 #actions = punching, resting
@@ -53,12 +62,7 @@ youChar = Character()
 testplayerpos = 0
 
 def isPunch():
-    if asdp[3] == 1:
-        return PUNCH
-    else:
-        return REST
-    # To be integrated with CV (deez nuts)
-    return false
+    return hand_punch_detector.is_punching
 
 def playerPosition():
     face_offset = face_detection_thread.get_face_x_offset()
@@ -125,6 +129,8 @@ dt = 1
 uistate = GAME
 
 def update(frameTime, uistate):
+    if isPunch():
+        print("PUNCH!")
     global ticks
 
     dt = frameTime >> DT_SHIFT
@@ -133,7 +139,7 @@ def update(frameTime, uistate):
 
     if uistate == MENU:
         #update current state
-        if (punching): #TOO: add transition
+        if (isPunch()): #TOO: add transition
             uistate=GAME
         #update ui
     elif uistate == GAME:
