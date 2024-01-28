@@ -13,19 +13,20 @@ ENEMY_HP = 5
 ALLIED_HP = 7
 ENEMY_TARGET_RANGE = .2
 ALLIED_HIT_RANGE = .3
-TICK_PHYSICS_MULTIPLIER = 500
+TICK_PHYSICS_MULTIPLIER = 350
 
-ENEMY_GODLINESS_BASE =  20 #higher is easier
+ENEMY_GODLINESS_BASE =  25 #higher is easier
 
 
 MENU = "menu"
 GAME = "game"
 GAMEOVER = "gameover"
 
+BEGINNER = 3000
 EASY = 2000
-MEDIUM = 1300
-HARD = 700
-BOSS = 500
+MEDIUM = 1700
+HARD = 1400
+BOSS = 1000
 
 def image_load_downscale(name, factor):
     img = pygame.image.load(name)

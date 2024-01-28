@@ -11,7 +11,7 @@ from punch_detection import HandPunchDetector
 false = False
 true = True
 asdp = [false, false, false, false]
-difficulty = EASY # high number: less difficult
+difficulty = MEDIUM # high number: less difficult
 # 2000: easy
 # 1300: medium
 # 700: hard
@@ -144,12 +144,12 @@ if difficulty == EASY:
     rightimg, rightimgsize = image_load_downscale("0_2_Idle.png", 7)
     rpg, rpgs = image_load_downscale("0_2_Punch.png", 7)
 elif difficulty == MEDIUM:
-    midimg, midimgsize = image_load_downscale("1_1_Idle.png", 7)
-    mpg, mpgs = image_load_downscale("1_1_Punch.png", 7)
-    leftimg, leftimgsize = image_load_downscale("1_0_Idle.png", 7)
-    lpg, lpgs = image_load_downscale("1_0_Punch.png", 7)
-    rightimg, rightimgsize = image_load_downscale("1_2_Idle.png", 7)
-    rpg, rpgs = image_load_downscale("1_2_Punch.png", 7)
+    midimg, midimgsize = image_load_downscale("5_1_Idle.png", 7)
+    mpg, mpgs = image_load_downscale("5_1_Punch.png", 7)
+    leftimg, leftimgsize = image_load_downscale("5_0_Idle.png", 7)
+    lpg, lpgs = image_load_downscale("5_0_Punch.png", 7)
+    rightimg, rightimgsize = image_load_downscale("5_2_Idle.png", 7)
+    rpg, rpgs = image_load_downscale("5_2_Punch.png", 7)
 elif difficulty == HARD:
     midimg, midimgsize = image_load_downscale("2_1_Idle.png", 7)
     mpg, mpgs = image_load_downscale("2_1_Punch.png", 7)
@@ -245,7 +245,7 @@ def update(frameTime):
                 if abs(enemyChar.xpos-youChar.xpos)<=ALLIED_HIT_RANGE:
                     enemyChar.healthPoints-=1
                     toAppend = physicsObj()
-                    print("hitobj")
+                    # print("hitobj")
                     toAppend.setInit(hitimg,[(enemyChar.xpos+.5)*display_size[0],10+random.random()*15],[1+random.random()*2,-1 -random.random()], [0,1])
                     hitIcons.append(toAppend)
                     if enemyChar.healthPoints<=0:
@@ -266,7 +266,7 @@ def update(frameTime):
                     toAppend.setInit(hitimg,[(youChar.xpos+.5)*display_size[0],display_size[1]*.75+random.random()*5],[2*(random.random()-.5),-2+random.random()*1], [0,1+random.random()*.5])
                     hitIcons.append(toAppend)
                 if youChar.healthPoints<=0:
-                        uiState=GAMEOVER
+                    uiState=GAMEOVER
             else:
                 # print("missobj")
                 toAppend = physicsObj()
@@ -322,13 +322,25 @@ def update(frameTime):
             screen.blit(player_idle_1_img, (youChar.xpos * display_size[0] + (display_size[0] / 2) - player_idle_1_img_size[0]//2, 600 - player_idle_1_img_size[1]/2))
         else:
             screen.blit(player_idle_2_img, (youChar.xpos * display_size[0] + (display_size[0] / 2) - player_idle_2_img_size[0]//2, 600 - player_idle_2_img_size[1]/2))
-
+        if youChar.healthPoints * enemyChar.healthPoints <= 0: uistate = GAMEOVER
     elif uistate == GAMEOVER:
         #display gameover screen
         pygame.draw.rect(screen,(255,255,255),(0,0,display_size[0],display_size[1]))
-        
-        #if isPunch():
-        #    uiState=MENU
+        if youChar.healthPoints <= 0:
+            text = font32.render("YOU LOST", True, (255, 0, 0))
+            textRect = text.get_rect()
+            textRect.center = (display_size[0] // 2, display_size[1] // 2)
+        elif enemyChar.healthPoints <= 0:
+            text = font32.render("YOU WON!", True, (0, 255, 0))
+            textRect = text.get_rect()
+            textRect.center = (display_size[0] // 2, display_size[1] // 2)
+        screen.blit(text, textRect)
+        text2 = font24.render("Punch to exit", True, (255, 0, 0))
+        text2Rect = text2.get_rect()
+        text2Rect.center = (display_size[0] // 2, display_size[1] // 2 + 90)
+        screen.blit(text2, text2Rect)
+        if isPunch():
+            sys.exit()
     else:
         pass #noop
 while True:
