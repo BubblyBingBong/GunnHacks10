@@ -11,6 +11,10 @@ from punch_detection import HandPunchDetector
 false = False
 true = True
 asdp = [false, false, false, false]
+difficulty = 700 # high number: less difficult
+# 2000: easy
+# 1300: medium
+# 700: hard
 
 frame_capturer = FrameCapturer(camera_index=0)
 
@@ -114,10 +118,20 @@ def periodicEnemyPos(t):
 
 pygame.init()
 pygame.display.set_caption("Test")
-display_size = (500, 500)
+display_size = (1280, 720)
 screen = pygame.display.set_mode(display_size)
 font = pygame.font.Font("freesansbold.ttf", 32)
 # bg = pygame.image.load("GunnHacks10/bgbg.png")
+midimg = pygame.image.load("GunnHacks10/0_1_Idle.png")
+midimgsize = (midimg.get_width()//7,midimg.get_height()//7)
+midimg = pygame.transform.scale(midimg, midimgsize)
+leftimg = pygame.image.load("GunnHacks10/0_0_Idle.png")
+leftimgsize = (leftimg.get_width()//7,leftimg.get_height()//7)
+leftimg = pygame.transform.scale(leftimg, leftimgsize)
+rightimg = pygame.image.load("GunnHacks10/0_2_Idle.png")
+rightimgsize = (rightimg.get_width()//7,rightimg.get_height()//7)
+rightimg = pygame.transform.scale(rightimg, rightimgsize)
+        
 
 DT_SHIFT = 10
 FPS = 60
@@ -149,7 +163,7 @@ def update(frameTime, uistate):
             enemyChar.positionTime+=frameTime
             youChar.positionTime+=frameTime
         youChar.update(playerPosition(), isPunch())
-        enemyChar.update(periodicEnemyPos(ticks / 700), enemyAction())
+        enemyChar.update(periodicEnemyPos(ticks / difficulty), enemyAction())
         
         # print(enemyChar.xpos)
         
@@ -167,8 +181,15 @@ def update(frameTime, uistate):
 
         #update UI - bottom: HP
         # print(youChar.cooldown, enemyChar.cooldown, youChar.xpos, enemyChar.xpos, asdp)
-        pygame.draw.circle(screen, (255,0,0), (enemyChar.xpos * display_size[0] + (display_size[0] / 2), 200), 25) #may not work
-        pygame.draw.circle(screen, (0,255,0), (youChar.xpos * display_size[0] + (display_size[0] / 2), 400), 25)
+        # pygame.draw.circle(screen, (255,0,0), (enemyChar.xpos * display_size[0] + (display_size[0] / 2), 200), 25) #may not work
+        if enemyChar.xpos < -0.1:
+            screen.blit(leftimg, (enemyChar.xpos * display_size[0] + (display_size[0] / 2) - leftimgsize[0]/2, 250 - leftimgsize[1]/2 + (20+random.random()*10)*np.sin(ticks/7)))
+        elif enemyChar.xpos > 0.1:
+            screen.blit(rightimg, (enemyChar.xpos * display_size[0] + (display_size[0] / 2) - rightimgsize[0]/2, 250 - rightimgsize[1]/2 + (20+random.random()*10)*np.sin(ticks/7)))
+        else:
+            screen.blit(midimg, (enemyChar.xpos * display_size[0] + (display_size[0] / 2) - midimgsize[0]/2, 250 - midimgsize[1]/2 + (20+random.random()*10)*np.sin(ticks/7)))
+        
+        pygame.draw.circle(screen, (0,255,0), (youChar.xpos * display_size[0] + (display_size[0] / 2), 600), 25)
     elif uistate == GAMEOVER:
         #display gameover screen
 
