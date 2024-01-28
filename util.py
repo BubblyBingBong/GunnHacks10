@@ -9,7 +9,7 @@ PUNCH = "punch"
 
 ENEMY_COOLDOWN = 150
 ALLIED_COOLDOWN = 75
-ENEMY_HP = 5
+ENEMY_HP = 10
 ALLIED_HP = 7
 ENEMY_TARGET_RANGE = .2
 ALLIED_HIT_RANGE = .3
@@ -24,9 +24,9 @@ GAME = "game"
 GAMEOVER = "gameover"
 
 BEGINNER = 3000
-EASY = 2000
-MEDIUM = 1700
-HARD = 1400
+EASY = 1800
+MEDIUM = 1500
+HARD = 1200
 BOSS = 700
 
 def image_load_downscale(name, factor):
